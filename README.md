@@ -1,4 +1,4 @@
-# package-updater
+# jsonfile-updater
 
 Node module for programatically updating `package.json` and other `.json` files.
 
@@ -7,7 +7,7 @@ Node module for programatically updating `package.json` and other `.json` files.
 ### Instantiation
 
 ```js
-var updater = require('package-updater')
+var updater = require('jsonfile-updater')
 ```
 
 Further examples will be referring to the `updater` object created in the code above.

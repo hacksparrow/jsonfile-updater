@@ -4,10 +4,10 @@ Node module for programatically updating `package.json` and other `.json` files.
 
 ## Usage
 
-#### Instantiation
+### Instantiation
 
 ```js
-var updater = require('package-updater') // pass the JSON file to work on
+var updater = require('package-updater')
 ```
 
 Further examples will be referring to the `updater` object created in the code above.
@@ -15,13 +15,13 @@ Further examples will be referring to the `updater` object created in the code a
 If you want to try out the examples, include the following code in your file.
 
 ```js
-var fs = require('fs') // need only for the examples
+var fs = require('fs')
 function getParsedPackage() {
   return JSON.parse(fs.readFileSync('./settings.json'))
 }
 ```
 
-### Adding properties
+### Adding properties - add()
 
 Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module will return an error. If you want to overwrite an existing property use `update()`.
 
@@ -55,7 +55,7 @@ updater('./settings.json').add('dependencies', { a: '1.2.1', b: '2.0.0'}, functi
 })
 ```
 
-### Updating properties
+### Updating properties - update()
 
 Using the `update()` method, you can update existing properties. If you try to update a property does not exist, the module will return an error.
 
@@ -89,7 +89,7 @@ updater('./settings.json').update('author', { 'username': 'hacksparrow' }, funct
 })
 ```
 
-### Deleting properties
+### Deleting properties - delete()
 
 Using the `delete()` method, you can delete existing properties. If you try to delete a property that does not exist, the module will return an error.
 

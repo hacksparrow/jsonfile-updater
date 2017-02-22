@@ -1,0 +1,23 @@
+{
+  "name": "package-updater",
+  "version": "1.0.0",
+  "description": "Node module for programatically updating package.json and other JSON files",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hacksparrow/package-updater.git"
+  },
+  "author": {
+    "name": "Hage Yaapa",
+    "email": "captain@hacksparrow.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hacksparrow/package-updater/issues"
+  },
+  "homepage": "https://github.com/hacksparrow/package-updater#readme",
+  "time": "now"
+}

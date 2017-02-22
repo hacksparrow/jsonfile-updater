@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/hacksparrow/jsonfile-updater.git"
   },
-  "tags": ["package.json", "json file", "json", "file", "update", "updater"],
+  "keywords": ["package.json", "json file", "json", "file", "update", "updater"],
   "author": {
     "name": "Hage Yaapa",
     "email": "captain@hacksparrow.com"

@@ -6,7 +6,7 @@ Node module for programatically updating `package.json` and other `.json` files.
 
 #### Instantiation
 
-```
+```js
 var updater = require('package-updater') // pass the JSON file to work on
 ```
 
@@ -14,7 +14,7 @@ Further examples will be referring to the `updater` object created in the code a
 
 If you want to try out the examples, include the following code in your file.
 
-```
+```js
 var fs = require('fs') // need only for the examples
 function getParsedPackage() {
   return JSON.parse(fs.readFileSync('./settings.json'))
@@ -27,7 +27,7 @@ Using the `add()` instance method, you can add new properties. If you try to add
 
 Adding a string-type property:
 
-```
+```js
 updater('./settings.json').add('time', 'now', function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -37,7 +37,7 @@ updater('./settings.json').add('time', 'now', function(err) {
 
 Adding an array-type property:
 
-```
+```js
 updater('./settings.json').add('tags', ['nodejs', 'javascript'], function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -47,7 +47,7 @@ updater('./settings.json').add('tags', ['nodejs', 'javascript'], function(err) {
 
 Adding an object-type property:
 
-```
+```js
 updater('./settings.json').add('dependencies', { a: '1.2.1', b: '2.0.0'}, function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -61,7 +61,7 @@ Using the `update()` method, you can update existing properties. If you try to u
 
 String-type properties are overwritten:
 
-```
+```js
 updater('./settings.json').update('license', 'FREE', function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -71,7 +71,7 @@ updater('./settings.json').update('license', 'FREE', function(err) {
 
 Array-type properties are appended:
 
-```
+```js
 updater('./settings.json').update('tags', 'cool', function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -81,7 +81,7 @@ updater('./settings.json').update('tags', 'cool', function(err) {
 
 Object-type properties are appended:
 
-```
+```js
 updater('./settings.json').update('author', { 'username': 'hacksparrow' }, function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -97,7 +97,7 @@ FYI: `delete()` is also aliased as `remove()`.
 
 Deleting a single property:
 
-```
+```js
 updater('./settings.json').delete('name', function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
@@ -107,7 +107,7 @@ updater('./settings.json').delete('name', function(err) {
 
 Deleting multiple properties:
 
-```
+```js
 updater('./settings.json').delete(['name', 'version'], function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()

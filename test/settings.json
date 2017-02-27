@@ -12,7 +12,11 @@
   },
   "author": {
     "name": "Hage Yaapa",
-    "email": "captain@hacksparrow.com"
+    "email": "captain@hacksparrow.com",
+    "hobbies": {
+      "primary": ["disco dance", "sun bathing"],
+      "secondary": ["sing song", "mujik"]
+    }
   },
   "license": "MIT",
   "bugs": {

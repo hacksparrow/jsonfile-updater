@@ -15,7 +15,8 @@
     "email": "captain@hacksparrow.com",
     "hobbies": {
       "primary": ["disco dance", "sun bathing"],
-      "secondary": ["sing song", "mujik"]
+      "secondary": ["sing song", "mujik"],
+      "others": "sitting"
     }
   },
   "license": "MIT",

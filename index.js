@@ -18,16 +18,20 @@ Updater.prototype.add = function(property, value, cb) {
       var pkg = JSON.parse(fileContent)
       var inputProperties = property.split('.')
       var propertyCursor = pkg
+      var propertyPath = ''
 
       for (var i = 0; i < inputProperties.length; i++) {
         var subProperty = inputProperties[i]
+        propertyPath += '.' + subProperty
         if (i === inputProperties.length - 1) {
-          if (subProperty in propertyCursor) { return cb(new Error('Property "' + property + '" already defined')) }
+          if (typeof(propertyCursor[subProperty]) !== 'undefined') {
+            return cb(new Error('Property "' + propertyPath + '" already defined'))
+          }
           propertyCursor[subProperty] = value
         } else {
-          propertyCursor[subProperty] = {}
-          propertyCursor = propertyCursor[subProperty]
+          if (typeof(propertyCursor[subProperty]) === 'undefined') { propertyCursor[subProperty] = {} }
         }
+        propertyCursor = propertyCursor[subProperty]
       }
 
       var updatedPackage = JSON.stringify(pkg, null, 2)
@@ -48,11 +52,13 @@ Updater.prototype.update = function(property, value, cb) {
 
       var inputProperties = property.split('.')
       var propertyCursor = pkg
+      var propertyPath = ''
 
       for (var i = 0; i < inputProperties.length; i++) {
         var subProperty = inputProperties[i]
+        propertyPath += '.' + subProperty
         if (i === inputProperties.length - 1) {
-          if (!(subProperty in propertyCursor)) { return cb(new Error('Property "' + property + '" not defined')) }
+          if (!(subProperty in propertyCursor)) { return cb(new Error('Property "' + propertyPath + '" not defined')) }
           propertyCursor[subProperty] = getFormattedValues(propertyCursor[subProperty], value)
         } else {
           propertyCursor = propertyCursor[subProperty]
@@ -75,6 +81,7 @@ Updater.prototype.delete = function(properties, cb) {
 
       var pkg = JSON.parse(fileContent)
       var propertyCursor = pkg
+      var propertyPath = ''
 
       var propertiesArray = []
       if (!Array.isArray(properties)) { propertiesArray.push(properties) }
@@ -85,13 +92,17 @@ Updater.prototype.delete = function(properties, cb) {
 
         for (var j = 0; j < inputProperties.length; j++) {
           var subProperty = inputProperties[j]
-          if (!(subProperty in propertyCursor)) { return cb(new Error('Property "' + property + '" not defined')) }
+          propertyPath += '.' + subProperty
+          if (!(subProperty in propertyCursor)) { return cb(new Error('Property "' + propertyPath + '" not defined')) }
           if (j === inputProperties.length - 1) {
             propertyCursor[subProperty] = undefined
           } else {
             propertyCursor = propertyCursor[subProperty]
           }
         }
+
+        propertyCursor = pkg
+        propertyPath = ''
 
       }
 

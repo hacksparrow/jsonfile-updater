@@ -55,6 +55,16 @@ updater('./settings.json').add('dependencies', { a: '1.2.1', b: '2.0.0'}, functi
 })
 ```
 
+You can target a sub-property using the dot notation:
+
+```js
+updater('./settings.json').add('author.age', 100, function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.author.age) // 100
+})
+```
+
 ### Updating properties - update()
 
 Using the `update()` method, you can update existing properties. If you try to update a property does not exist, the module will return an error.
@@ -89,6 +99,16 @@ updater('./settings.json').update('author', { 'username': 'hacksparrow' }, funct
 })
 ```
 
+You can target a sub-property using the dot notation:
+
+```js
+updater('./settings.json').update('author.age', 200, function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.author.age) // 200
+})
+```
+
 ### Deleting properties - delete()
 
 Using the `delete()` method, you can delete existing properties. If you try to delete a property that does not exist, the module will return an error.
@@ -112,6 +132,16 @@ updater('./settings.json').delete(['name', 'version'], function(err) {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
   console.log(pkg)
+})
+```
+
+You can target a sub-property using the dot notation:
+
+```js
+updater('./settings.json').delete('author.age', function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.author.age) // undefined
 })
 ```
 

@@ -64,13 +64,46 @@ describe('updater()', function() {
       })
     })
 
-    it('should support dot selector', function(done) {
-      updater(destSettingsPath).add('animals.mammals.cats', [], function(err) {
-        if (err) return done(err)
-        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
-        assert(Array.isArray(pkg.animals.mammals.cats))
-        done()
+    describe('dot selector', function() {
+
+      it('should throw if a property is aleady defined', function(done) {
+        updater(destSettingsPath).add('author.name', 'Yaapa', function(err) {
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert(err)
+          done()
+        })
       })
+
+      it('should add a string-type property', function(done) {
+        updater(destSettingsPath).add('time.is', 'now', function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal('now', pkg.time.is)
+          done()
+        })
+      })
+
+      it('should add an array-type property', function(done) {
+        updater(destSettingsPath).add('numbers.prime.odd', [1, 3, 5, 7], function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal(4, pkg.numbers.prime.odd.length)
+          assert.equal(7, pkg.numbers.prime.odd[3])
+          done()
+        })
+      })
+
+      it('should add an object-type property', function(done) {
+        updater(destSettingsPath).add('earth.india.karnataka', {
+          'capital': 'Bengaluru'
+        }, function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal('Bengaluru', pkg.earth.india.karnataka.capital)
+          done()
+        })
+      })
+
     })
 
   })
@@ -115,13 +148,47 @@ describe('updater()', function() {
       })
     })
 
-    it('should support dot selector', function(done) {
-      updater(destSettingsPath).update('author.hobbies.primary', 'ping pong', function(err) {
-        if (err) return done(err)
-        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
-        assert(pkg.author.hobbies.primary.includes('ping pong'))
-        done()
+    describe('dot selector', function() {
+
+      it('should throw if a property is not defined', function(done) {
+        updater(destSettingsPath).update('author.skillz', 'Nunchuks', function(err) {
+          assert(err)
+          done()
+        })
       })
+
+      it('should overwrite an existing string-type property', function(done) {
+        updater(destSettingsPath).update('author.hobbies.others', 'Laughing', function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal('Laughing', pkg.author.hobbies.others)
+          assert.equal('Hage Yaapa', pkg.author.name)
+          done()
+        })
+      })
+
+      it('should append to an existing array-type property', function(done) {
+        updater(destSettingsPath).update('author.hobbies.primary', 'ping pong', function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert(pkg.author.hobbies.primary.includes('ping pong'))
+          assert(pkg.author.hobbies.primary.includes('disco dance'))
+          done()
+        })
+      })
+
+      it('should append to an existing object-type property', function(done) {
+        updater(destSettingsPath).update('author.hobbies', {
+          'secret': 'computer hacking'
+        }, function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal('computer hacking', pkg.author.hobbies.secret)
+          assert.equal('Hage Yaapa', pkg.author.name)
+          done()
+        })
+      })
+
     })
 
   })
@@ -161,6 +228,38 @@ describe('updater()', function() {
         assert(!('secondary' in pkg.author.hobbies))
         done()
       })
+    })
+
+    describe('dot selector', function() {
+
+      it('should throw if a property is not defined', function(done) {
+        updater(destSettingsPath).delete('author.skillz', function(err) {
+          assert(err)
+          done()
+        })
+      })
+
+      it('should delete a single property', function(done) {
+        updater(destSettingsPath).delete('author.hobbies.others', function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert.equal(undefined, pkg.author.hobbies.others)
+          done()
+        })
+      })
+
+      it('should delete multiple properties', function(done) {
+        updater(destSettingsPath).delete(['author.hobbies.secondary', 'author.email'], function(err) {
+          if (err) return done(err)
+          var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+          assert(!('secondary' in pkg.author.hobbies))
+          assert(!('email' in pkg.author))
+          assert.equal('Hage Yaapa', pkg.author.name)
+          assert(pkg.author.hobbies.primary.includes('disco dance'))
+          done()
+        })
+      })
+
     })
 
   })

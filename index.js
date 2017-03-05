@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs')
+var sortKeys = require('sort-keys')
 
 function Updater(jsonFilePath) {
   this.jsonFilePath = jsonFilePath
@@ -205,7 +206,7 @@ function getAppendedValues(targetProperty, value, preserve) {
       }
 
     } else {
-      formattedValues = Object.assign(value, targetProperty)
+      formattedValues = sortKeys(Object.assign(value, targetProperty))
     }
   } else if (typeof targetProperty === 'string') {
     formattedValues = targetProperty + value

@@ -2,6 +2,10 @@
 
 Node module for programatically updating `package.json` and other `.json` files.
 
+`jsonfile-updater` enforces strict type values. Boolean, string, number, array, and object are supported. Functions are not supported.
+
+A value cab be overwritten (using `set()` or `append()`) by a value of same type only.
+
 ## Usage
 
 ### Instantiation
@@ -21,9 +25,12 @@ function getParsedPackage() {
 }
 ```
 
-### Adding properties - add()
+### Adding properties
 
-Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module will return an error. If you want to overwrite an existing property use `update()`.
+** add(property, value, callback) **
+
+Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module will return an error.
+If you want to overwrite an existing property use `set()` or `append()`.
 
 Adding a string-type property:
 
@@ -55,7 +62,7 @@ updater('./settings.json').add('dependencies', { a: '1.2.1', b: '2.0.0'}, functi
 })
 ```
 
-You can target a sub-property using the dot notation:
+You can add a sub-property using the dot notation:
 
 ```js
 updater('./settings.json').add('author.age', 100, function(err) {
@@ -65,11 +72,12 @@ updater('./settings.json').add('author.age', 100, function(err) {
 })
 ```
 
-### Updating properties - update()
+### Updating properties
 
-Using the `update()` method, you can update existing properties. If you try to update a property does not exist, the module will return an error.
+** set(property, callback) **
 
-String-type properties are overwritten:
+Using the `set()` method, you can overwrite existing properties. If you try to update a property does not exist, the module will return an error.
+The new value should be the same as the old value's data type.
 
 ```js
 updater('./settings.json').update('license', 'FREE', function(err) {
@@ -79,8 +87,6 @@ updater('./settings.json').update('license', 'FREE', function(err) {
 })
 ```
 
-Array-type properties are appended:
-
 ```js
 updater('./settings.json').update('tags', 'cool', function(err) {
   if (err) return console.log(err)
@@ -88,8 +94,6 @@ updater('./settings.json').update('tags', 'cool', function(err) {
   console.log(pkg.tags.includes('cool')) // true
 })
 ```
-
-Object-type properties are appended:
 
 ```js
 updater('./settings.json').update('author', { 'username': 'hacksparrow' }, function(err) {
@@ -109,7 +113,22 @@ updater('./settings.json').update('author.age', 200, function(err) {
 })
 ```
 
-### Deleting properties - delete()
+** append(property, callback) **
+
+Using the `append()` method, you can append items to an existing value. If you try to update a property does not exist, the module will return an error.
+
+There are some data type restrictions:
+
+1. Booleans cannot be appended
+2. A string can be appended only to string or array (pushed)
+3. A number can be appended only to an array (pushed)
+4. An array can be appended only to another array (concatenated)
+5. An object can be appended only to another object (merged)
+
+
+### Deleting properties
+
+**delete(property|[properties ...], callback)**
 
 Using the `delete()` method, you can delete existing properties. If you try to delete a property that does not exist, the module will return an error.
 

@@ -1,6 +1,6 @@
 {
   "name": "jsonfile-updater",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Node module for programatically updating package.json and other JSON files",
   "main": "index.js",
   "scripts": {

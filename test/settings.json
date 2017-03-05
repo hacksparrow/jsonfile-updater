@@ -11,6 +11,7 @@
     "url": "git+https://github.com/hacksparrow/jsonfile-updater.git"
   },
   "author": {
+    "friendly": true,
     "name": "Hage Yaapa",
     "email": "captain@hacksparrow.com",
     "hobbies": {
@@ -24,5 +25,7 @@
     "url": "https://github.com/hacksparrow/jsonfile-updater/issues"
   },
   "homepage": "https://github.com/hacksparrow/jsonfile-updater#readme",
-  "tags": ["node", "javascript"]
+  "tags": ["node", "javascript"],
+  "year": 2017,
+  "public": true
 }

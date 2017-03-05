@@ -27,7 +27,7 @@ function getParsedPackage() {
 
 ### Adding properties
 
-** add(property, value, callback) **
+**add(property, value, callback)**
 
 Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module will return an error.
 If you want to overwrite an existing property use `set()` or `append()`.
@@ -74,7 +74,7 @@ updater('./settings.json').add('author.age', 100, function(err) {
 
 ### Updating properties
 
-** set(property, callback) **
+**set(property, callback)**
 
 Using the `set()` method, you can overwrite existing properties. If you try to update a property does not exist, the module will return an error.
 The new value should be the same as the old value's data type.
@@ -113,7 +113,7 @@ updater('./settings.json').update('author.age', 200, function(err) {
 })
 ```
 
-** append(property, callback) **
+**append(property, callback)**
 
 Using the `append()` method, you can append items to an existing value. If you try to update a property does not exist, the module will return an error.
 

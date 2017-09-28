@@ -2,10 +2,13 @@
 
 Node module for programmatically updating `package.json` and other `.json` files.
 
-`jsonfile-updater` enforces strict typing. Meaning, once a property of a certain type is added in the JSON file, it can be 
+**NOTE**: This package does not create JSON files, it can only edit existing valid JSON files. A file with just `{}`
+is all you need to get started.
+
+`jsonfile-updater` enforces strict typing. Meaning, once a property of a certain type is added in the JSON file, it can be
 overwritten or set a new value with the same type only.
 
-Supported types are: boolean, string, number, array, and object. Functions are not supported. 
+Supported types are: boolean, string, number, array, and object. Functions are not supported.
 
 ## Usage
 
@@ -26,14 +29,19 @@ function getParsedPackage() {
 }
 ```
 
+The `jsonfile-updater` methods support both callback and promise. If you omit the callback parameter,
+they return a promise, which can greatly simplify the code when used with [async](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function)-[await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await).
+
 ### Adding properties
 
-**`add(property, value, callback)`**
+**`add(property, value[, callback])`**
 
-Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module 
+Using the `add()` instance method, you can add new properties. If you try to add a property that aleady exists, the module
 will return an error. If you want to overwrite an existing property use `set()` or `append()`.
 
 Adding a string-type property:
+
+_Callback_
 
 ```js
 updater('./settings.json').add('time', 'now', function(err) {
@@ -42,6 +50,16 @@ updater('./settings.json').add('time', 'now', function(err) {
   console.log(pkg.time === 'now') // true
 })
 ```
+
+_Promise_
+
+```js
+updater('./settings.json').add('time', 'now')
+.then(err => {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.time === 'now') // true
+})
 
 Adding an array-type property:
 
@@ -75,16 +93,29 @@ updater('./settings.json').add('author.age', 100, function(err) {
 
 ### Updating properties
 
-There are two methods for updating existing properties: `set()` for overwriting an existing value, `append()` for 
+There are two methods for updating existing properties: `set()` for overwriting an existing value, `append()` for
 adding additional data to an existing value.
 
-**`set(property, value, callback)`**
+**`set(property, value[, callback])`**
 
-Using the `set()` method, you can overwrite existing properties. If you try to update a property does not exist, 
+Using the `set()` method, you can overwrite existing properties. If you try to update a property does not exist,
 the module will return an error. The new value should be the same as the old value's data type.
+
+_Callback_
 
 ```js
 updater('./settings.json').set('license', 'FREE', function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.license)
+})
+```
+
+_Promisek_
+
+```js
+updater('./settings.json').set('license', 'FREE')
+.then(err => {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
   console.log(pkg.license)
@@ -117,9 +148,9 @@ updater('./settings.json').update('author.age', 200, function(err) {
 })
 ```
 
-**`append(property, value, [preserve], callback)`**
+**`append(property, value[, preserve][, callback])`**
 
-Using the `append()` method, you can append items to an existing value. If you try to update a property does not exist, 
+Using the `append()` method, you can append items to an existing value. If you try to update a property does not exist,
 the module will return an error. `append()` does not work for all data types and work differently on different data types.
 
 1. Booleans cannot be appended to anything
@@ -128,13 +159,24 @@ the module will return an error. `append()` does not work for all data types and
 4. An array can be appended only to another array (concatenated by default)
 5. An object can be appended only to an array (pushed) or another object (merged)
 
-When an array is append to an array, the "appendee" will be concatened to the "appender". To preserve the array of the 
+When an array is append to an array, the "appendee" will be concatened to the "appender". To preserve the array of the
 "appendee", and push it to the "appender", specify the `preserve` option when calling `append`.
 
 Appending a string to an array:
 
+_Callback_
 ```js
 updater('./settings.json').append('tags', 'cool', function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg.tags)
+})
+```
+
+_Promise_
+```js
+updater('./settings.json').append('tags', 'cool')
+.then(err => {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
   console.log(pkg.tags)
@@ -155,17 +197,28 @@ For more examples, refer [/test/test.js](/test/test.js).
 
 ### Deleting properties
 
-**`delete(property|[properties ...], callback)`**
+**`delete(property|[properties ...][, callback])`**
 
-Using the `delete()` method, you can delete existing properties. If you try to delete a property that does not exist, 
+Using the `delete()` method, you can delete existing properties. If you try to delete a property that does not exist,
 the module will return an error.
 
 FYI: `delete()` is also aliased as `remove()`.
 
 Deleting a single property:
 
+_Callback_
 ```js
 updater('./settings.json').delete('name', function(err) {
+  if (err) return console.log(err)
+  var pkg = getParsedPackage()
+  console.log(pkg)
+})
+```
+
+_Promise_
+```js
+updater('./settings.json').delete('name')
+.then(err => {
   if (err) return console.log(err)
   var pkg = getParsedPackage()
   console.log(pkg)

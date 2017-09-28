@@ -20,6 +20,19 @@ describe('updater()', function() {
 
   describe('.add()', function() {
 
+    it('should return a promise if no callback', function(done) {
+      updater(destSettingsPath).add('a', 'apple')
+      .then(() => updater(destSettingsPath).add('b', 'book'))
+      .then(() => updater(destSettingsPath).add('c', 'cat', (err) => {
+        if (err) return done(err)
+        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+        assert.equal('apple', pkg.a)
+        assert.equal('book', pkg.b)
+        assert.equal('cat', pkg.c)
+        done()
+      }))
+    })
+
     it('should throw if a property is aleady defined', function(done) {
       updater(destSettingsPath).add('author', 'Hage Yaapa', function(err) {
         assert(err)
@@ -127,6 +140,19 @@ describe('updater()', function() {
   })
 
   describe('.set()', function() {
+
+    it('should return a promise if no callback', function(done) {
+      updater(destSettingsPath).set('name', 'apple')
+      .then(() => updater(destSettingsPath).set('year', 2000))
+      .then(() => updater(destSettingsPath).set('public', false, (err) => {
+        if (err) return done(err)
+        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+        assert.equal('apple', pkg.name)
+        assert.equal(2000, pkg.year)
+        assert.equal(false, pkg.public)
+        done()
+      }))
+    })
 
     it('should throw if a property is not defined', function(done) {
       updater(destSettingsPath).set('random', '', function(err) {
@@ -239,6 +265,19 @@ describe('updater()', function() {
   })
 
   describe('.append()', function() {
+
+    it('should return a promise if no callback', function(done) {
+      updater(destSettingsPath).append('version', '-beta')
+      .then(() => updater(destSettingsPath).append('license', 'COOL'))
+      .then(() => updater(destSettingsPath).append('tags', 'json', (err) => {
+        if (err) return done(err)
+        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+        assert.equal('1.0.0-beta', pkg.version)
+        assert.equal('MITCOOL', pkg.license)
+        assert(pkg.tags.includes('json'))
+        done()
+      }))
+    })
 
     it('should throw if a property is not defined', function(done) {
       updater(destSettingsPath).append('random', '', function(err) {
@@ -503,6 +542,20 @@ describe('updater()', function() {
   })
 
   describe('.delete()', function() {
+
+    it('should return a promise if no callback', function(done) {
+      updater(destSettingsPath).delete('name')
+      .then(() => updater(destSettingsPath).delete(['license', 'version']))
+      .then(() => updater(destSettingsPath).delete('author', (err) => {
+        if (err) return done(err)
+        var pkg = JSON.parse(fs.readFileSync(destSettingsPath))
+        assert(!('name' in pkg))
+        assert(!('license' in pkg))
+        assert(!('version' in pkg))
+        assert(!('author' in pkg))
+        done()
+      }))
+    })
 
     it('should throw if a property is not defined', function(done) {
       updater(destSettingsPath).delete(['name', 'random'], function(err) {

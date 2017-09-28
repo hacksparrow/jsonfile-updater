@@ -9,72 +9,118 @@ function Updater(jsonFilePath) {
 
 Updater.prototype.add = function(property, value, cb) {
   var jsonFilePath = this.jsonFilePath
-  fs.access(jsonFilePath, function(err) {
-    if (err) return cb(err)
-    fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
-
-      if (err) return cb(err)
-
-      var pkg = JSON.parse(fileContent)
-      var inputProperties = property.split('.')
-      var propertyCursor = pkg
-      var propertyPath = ''
-
-      for (var i = 0; i < inputProperties.length; i++) {
-        var subProperty = inputProperties[i]
-        propertyPath += '.' + subProperty
-        if (i === inputProperties.length - 1) {
-          if (typeof(propertyCursor[subProperty]) !== 'undefined') {
-            return cb(new Error('Property "' + propertyPath + '" already defined'))
-          }
-          propertyCursor[subProperty] = value
-        } else {
-          if (typeof(propertyCursor[subProperty]) === 'undefined') { propertyCursor[subProperty] = {} }
-        }
-        propertyCursor = propertyCursor[subProperty]
-      }
-
-      var updatedPackage = JSON.stringify(pkg, null, 2)
-      fs.writeFile(jsonFilePath, updatedPackage, cb)
+  if (!cb) {
+    return new Promise((resolve, reject) => {
+      addProperty(resolve, reject)
     })
-  })
+  } else {
+    addProperty(cb)
+  }
+
+  function addProperty(resolve, reject) {
+    let isPromise = false
+    let cb = resolve
+    if (reject) isPromise = true
+
+    fs.access(jsonFilePath, function(err) {
+      if (err) {
+        if (isPromise) return reject(err)
+        return cb(err)
+      }
+      fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+
+        if (err) {
+          if (isPromise) return reject(err)
+          return cb(err)
+        }
+
+        var pkg = JSON.parse(fileContent)
+        var inputProperties = property.split('.')
+        var propertyCursor = pkg
+        var propertyPath = ''
+
+        for (var i = 0; i < inputProperties.length; i++) {
+          var subProperty = inputProperties[i]
+          propertyPath += '.' + subProperty
+          if (i === inputProperties.length - 1) {
+            if (typeof(propertyCursor[subProperty]) !== 'undefined') {
+              var err = new Error('Property "' + propertyPath + '" already defined')
+              if (isPromise) reject(err)
+              else return cb(err)
+            }
+            propertyCursor[subProperty] = value
+          } else {
+            if (typeof(propertyCursor[subProperty]) === 'undefined') { propertyCursor[subProperty] = {} }
+          }
+          propertyCursor = propertyCursor[subProperty]
+        }
+
+        var updatedPackage = JSON.stringify(pkg, null, 2)
+        fs.writeFile(jsonFilePath, updatedPackage, cb)
+      })
+    })
+  }
 }
 
 Updater.prototype.set = function(property, value, cb) {
   var jsonFilePath = this.jsonFilePath
-  fs.access(jsonFilePath, function(err) {
-    if (err) return cb(err)
-    fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+  if (!cb) {
+    return new Promise((resolve, reject) => {
+      setProperty(resolve, reject)
+    })
+  } else {
+    setProperty(cb)
+  }
 
-      if (err) return cb(err)
+  function setProperty(resolve, reject) {
+    let isPromise = false
+    let cb = resolve
+    if (reject) isPromise = true
 
-      var pkg = JSON.parse(fileContent)
-
-      var inputProperties = property.split('.')
-      var propertyCursor = pkg
-      var propertyPath = ''
-
-      for (var i = 0; i < inputProperties.length; i++) {
-        var subProperty = inputProperties[i]
-        propertyPath += '.' + subProperty
-        if (i === inputProperties.length - 1) {
-          if (!(subProperty in propertyCursor)) {
-            return cb(new Error('Property "' + propertyPath + '" not defined'))
-          }
-          if (!areSameDataType(propertyCursor[subProperty], value)) {
-            return cb(new Error('Mismatched data type'))
-          } else {
-            propertyCursor[subProperty] = value
-          }
-        } else {
-          propertyCursor = propertyCursor[subProperty]
-        }
+    fs.access(jsonFilePath, function(err) {
+      if (err) {
+        if (isPromise) return reject(err)
+        return cb(err)
       }
 
-      var updatedPackage = JSON.stringify(pkg, null, 2)
-      fs.writeFile(jsonFilePath, updatedPackage, cb)
+      fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+        if (err) {
+          if (isPromise) return reject(err)
+          return cb(err)
+        }
+
+        var pkg = JSON.parse(fileContent)
+
+        var inputProperties = property.split('.')
+        var propertyCursor = pkg
+        var propertyPath = ''
+
+        for (var i = 0; i < inputProperties.length; i++) {
+          var subProperty = inputProperties[i]
+          propertyPath += '.' + subProperty
+          if (i === inputProperties.length - 1) {
+            if (!(subProperty in propertyCursor)) {
+              var err = new Error('Property "' + propertyPath + '" not defined')
+              if (isPromise) reject(err)
+              else return cb(err)
+            }
+            if (!areSameDataType(propertyCursor[subProperty], value)) {
+              var err = new Error('Mismatched data type')
+              if (isPromise) reject(err)
+              else return cb(err)
+            } else {
+              propertyCursor[subProperty] = value
+            }
+          } else {
+            propertyCursor = propertyCursor[subProperty]
+          }
+        }
+
+        var updatedPackage = JSON.stringify(pkg, null, 2)
+        fs.writeFile(jsonFilePath, updatedPackage, cb)
+      })
     })
-  })
+  }
 }
 
 Updater.prototype.append = function(property, value, preserve, cb) {
@@ -82,84 +128,135 @@ Updater.prototype.append = function(property, value, preserve, cb) {
     cb = preserve
     preserve = false
   }
+
   var jsonFilePath = this.jsonFilePath
-  fs.access(jsonFilePath, function(err) {
-    if (err) return cb(err)
-    fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
 
-      if (err) return cb(err)
-
-      var pkg = JSON.parse(fileContent)
-
-      var inputProperties = property.split('.')
-      var propertyCursor = pkg
-      var propertyPath = ''
-
-      for (var i = 0; i < inputProperties.length; i++) {
-        var subProperty = inputProperties[i]
-        propertyPath += '.' + subProperty
-        if (i === inputProperties.length - 1) {
-          if (!(subProperty in propertyCursor)) {
-            return cb(new Error('Property "' + propertyPath + '" not defined'))
-          }
-          var currentValue = propertyCursor[subProperty]
-          if (areBooleanAndBoolean(currentValue, value) || areNumberAndNumber(currentValue, value)) {
-            return cb(new Error('Cannot append'))
-          } else if (!preserve && !areArrayAndValid(currentValue, value) && !areSameDataType(currentValue, value)) {
-            return cb(new Error('Mismatched data type'))
-          } else {
-            propertyCursor[subProperty] = getAppendedValues(propertyCursor[subProperty], value, preserve)
-          }
-        } else {
-          propertyCursor = propertyCursor[subProperty]
-        }
-      }
-
-      var updatedPackage = JSON.stringify(pkg, null, 2)
-      fs.writeFile(jsonFilePath, updatedPackage, cb)
+  if (!cb) {
+    return new Promise((resolve, reject) => {
+      appendProperty(resolve, reject)
     })
-  })
-}
+  } else {
+    appendProperty(cb)
+  }
 
-Updater.prototype.delete = function(properties, cb) {
-  var jsonFilePath = this.jsonFilePath
-  fs.access(jsonFilePath, function(err) {
-    if (err) return cb(err)
-    fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+  function appendProperty(resolve, reject) {
 
-      if (err) return cb(err)
+    let isPromise = false
+    let cb = resolve
+    if (reject) isPromise = true
 
-      var pkg = JSON.parse(fileContent)
-      var propertyCursor = pkg
-      var propertyPath = ''
+    fs.access(jsonFilePath, function(err) {
+      if (err) {
+        if (isPromise) return reject(err)
+        return cb(err)
+      }
+      fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+        if (err) {
+          if (isPromise) return reject(err)
+          return cb(err)
+        }
 
-      var propertiesArray = []
-      if (!Array.isArray(properties)) { propertiesArray.push(properties) }
-      else propertiesArray = properties
-      for (var i = 0; i < propertiesArray.length; i++) {
-        var property = propertiesArray[i]
+        var pkg = JSON.parse(fileContent)
+
         var inputProperties = property.split('.')
+        var propertyCursor = pkg
+        var propertyPath = ''
 
-        for (var j = 0; j < inputProperties.length; j++) {
-          var subProperty = inputProperties[j]
+        for (var i = 0; i < inputProperties.length; i++) {
+          var subProperty = inputProperties[i]
           propertyPath += '.' + subProperty
-          if (!(subProperty in propertyCursor)) { return cb(new Error('Property "' + propertyPath + '" not defined')) }
-          if (j === inputProperties.length - 1) {
-            propertyCursor[subProperty] = undefined
+          if (i === inputProperties.length - 1) {
+            if (!(subProperty in propertyCursor)) {
+              var err = new Error('Property "' + propertyPath + '" not defined')
+              if (isPromise) reject(err)
+              else return cb(err)
+            }
+            var currentValue = propertyCursor[subProperty]
+            if (areBooleanAndBoolean(currentValue, value) || areNumberAndNumber(currentValue, value)) {
+              var err = new Error('Cannot append')
+              if (isPromise) reject(err)
+              else return cb(err)
+            } else if (!preserve && !areArrayAndValid(currentValue, value) && !areSameDataType(currentValue, value)) {
+              var err = new Error('Mismatched data type')
+              if (isPromise) reject(err)
+              else return cb(err)
+            } else {
+              propertyCursor[subProperty] = getAppendedValues(propertyCursor[subProperty], value, preserve)
+            }
           } else {
             propertyCursor = propertyCursor[subProperty]
           }
         }
 
-        propertyCursor = pkg
-        propertyPath = ''
-
-      }
-
-      var updatedPackage = JSON.stringify(pkg, null, 2)
-      fs.writeFile(jsonFilePath, updatedPackage, cb)
+        var updatedPackage = JSON.stringify(pkg, null, 2)
+        fs.writeFile(jsonFilePath, updatedPackage, cb)
+      })
     })
-  })
+  }
+}
+
+Updater.prototype.delete = function(properties, cb) {
+  var jsonFilePath = this.jsonFilePath
+  if (!cb) {
+    return new Promise((resolve, reject) => {
+      deleteProperty(resolve, reject)
+    })
+  } else {
+    deleteProperty(cb)
+  }
+
+  function deleteProperty(resolve, reject) {
+    let isPromise = false
+    let cb = resolve
+    if (reject) isPromise = true
+
+    fs.access(jsonFilePath, function(err) {
+      if (err) {
+        if (isPromise) return reject(err)
+        return cb(err)
+      }
+      fs.readFile(jsonFilePath, 'utf8', function(err, fileContent) {
+        if (err) {
+          if (isPromise) return reject(err)
+          return cb(err)
+        }
+
+        var pkg = JSON.parse(fileContent)
+        var propertyCursor = pkg
+        var propertyPath = ''
+
+        var propertiesArray = []
+        if (!Array.isArray(properties)) { propertiesArray.push(properties) }
+        else propertiesArray = properties
+        for (var i = 0; i < propertiesArray.length; i++) {
+          var property = propertiesArray[i]
+          var inputProperties = property.split('.')
+
+          for (var j = 0; j < inputProperties.length; j++) {
+            var subProperty = inputProperties[j]
+            propertyPath += '.' + subProperty
+            if (!(subProperty in propertyCursor)) {
+              var err = new Error('Property "' + propertyPath + '" not defined')
+              if (isPromise) reject(err)
+              else return cb(err)
+            }
+            if (j === inputProperties.length - 1) {
+              propertyCursor[subProperty] = undefined
+            } else {
+              propertyCursor = propertyCursor[subProperty]
+            }
+          }
+
+          propertyCursor = pkg
+          propertyPath = ''
+
+        }
+
+        var updatedPackage = JSON.stringify(pkg, null, 2)
+        fs.writeFile(jsonFilePath, updatedPackage, cb)
+      })
+    })
+  }
 }
 
 Updater.prototype.remove = Updater.prototype.delete

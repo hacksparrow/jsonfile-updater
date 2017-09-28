@@ -60,6 +60,7 @@ updater('./settings.json').add('time', 'now')
   var pkg = getParsedPackage()
   console.log(pkg.time === 'now') // true
 })
+```
 
 Adding an array-type property:
 
@@ -111,7 +112,7 @@ updater('./settings.json').set('license', 'FREE', function(err) {
 })
 ```
 
-_Promisek_
+_Promise_
 
 ```js
 updater('./settings.json').set('license', 'FREE')

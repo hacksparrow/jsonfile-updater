@@ -56,7 +56,15 @@ Updater.prototype.add = function(property, value, cb) {
         }
 
         var updatedPackage = JSON.stringify(pkg, null, 2)
-        fs.writeFile(jsonFilePath, updatedPackage, cb)
+        fs.writeFile(jsonFilePath, updatedPackage, function(err) {
+          if (err) {
+            if (isPromise) return reject(err)
+            return cb(err)
+          } else {
+            if (isPromise) return resolve()
+            return cb()
+          }
+        })
       })
     })
   }
@@ -104,20 +112,35 @@ Updater.prototype.set = function(property, value, cb) {
               if (isPromise) reject(err)
               else return cb(err)
             }
-            if (!areSameDataType(propertyCursor[subProperty], value)) {
-              var err = new Error('Mismatched data type')
+
+            try {
+              if (!areSameDataType(propertyCursor[subProperty], value)) {
+                var err = new Error('Mismatched data type')
+                if (isPromise) reject(err)
+                else return cb(err)
+              } else {
+                propertyCursor[subProperty] = value
+              }
+            } catch(err) {
               if (isPromise) reject(err)
               else return cb(err)
-            } else {
-              propertyCursor[subProperty] = value
             }
+
           } else {
             propertyCursor = propertyCursor[subProperty]
           }
         }
 
         var updatedPackage = JSON.stringify(pkg, null, 2)
-        fs.writeFile(jsonFilePath, updatedPackage, cb)
+        fs.writeFile(jsonFilePath, updatedPackage, function(err) {
+          if (err) {
+            if (isPromise) return reject(err)
+            return cb(err)
+          } else {
+            if (isPromise) return resolve()
+            return cb()
+          }
+        })
       })
     })
   }
@@ -172,24 +195,39 @@ Updater.prototype.append = function(property, value, preserve, cb) {
               else return cb(err)
             }
             var currentValue = propertyCursor[subProperty]
-            if (areBooleanAndBoolean(currentValue, value) || areNumberAndNumber(currentValue, value)) {
-              var err = new Error('Cannot append')
+
+            try {
+              if (areBooleanAndBoolean(currentValue, value) || areNumberAndNumber(currentValue, value)) {
+                var err = new Error('Cannot append')
+                if (isPromise) reject(err)
+                else return cb(err)
+              } else if (!preserve && !areArrayAndValid(currentValue, value) && !areSameDataType(currentValue, value)) {
+                var err = new Error('Mismatched data type')
+                if (isPromise) reject(err)
+                else return cb(err)
+              } else {
+                propertyCursor[subProperty] = getAppendedValues(propertyCursor[subProperty], value, preserve)
+              }
+            } catch(err) {
               if (isPromise) reject(err)
               else return cb(err)
-            } else if (!preserve && !areArrayAndValid(currentValue, value) && !areSameDataType(currentValue, value)) {
-              var err = new Error('Mismatched data type')
-              if (isPromise) reject(err)
-              else return cb(err)
-            } else {
-              propertyCursor[subProperty] = getAppendedValues(propertyCursor[subProperty], value, preserve)
             }
+
           } else {
             propertyCursor = propertyCursor[subProperty]
           }
         }
 
         var updatedPackage = JSON.stringify(pkg, null, 2)
-        fs.writeFile(jsonFilePath, updatedPackage, cb)
+        fs.writeFile(jsonFilePath, updatedPackage, function(err) {
+          if (err) {
+            if (isPromise) return reject(err)
+            return cb(err)
+          } else {
+            if (isPromise) return resolve()
+            return cb()
+          }
+        })
       })
     })
   }
@@ -253,7 +291,15 @@ Updater.prototype.delete = function(properties, cb) {
         }
 
         var updatedPackage = JSON.stringify(pkg, null, 2)
-        fs.writeFile(jsonFilePath, updatedPackage, cb)
+        fs.writeFile(jsonFilePath, updatedPackage, function(err) {
+          if (err) {
+            if (isPromise) return reject(err)
+            return cb(err)
+          } else {
+            if (isPromise) return resolve()
+            return cb()
+          }
+        })
       })
     })
   }

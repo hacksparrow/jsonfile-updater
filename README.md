@@ -55,11 +55,10 @@ _Promise_
 
 ```js
 updater('./settings.json').add('time', 'now')
-.then(err => {
-  if (err) return console.log(err)
+.then(() => {
   var pkg = getParsedPackage()
   console.log(pkg.time === 'now') // true
-})
+}, reason => console.log(reason))
 ```
 
 Adding an array-type property:
@@ -116,11 +115,10 @@ _Promise_
 
 ```js
 updater('./settings.json').set('license', 'FREE')
-.then(err => {
-  if (err) return console.log(err)
+.then(() => {
   var pkg = getParsedPackage()
   console.log(pkg.license)
-})
+}, reason => console.log(reason))
 ```
 
 ```js
@@ -177,11 +175,10 @@ updater('./settings.json').append('tags', 'cool', function(err) {
 _Promise_
 ```js
 updater('./settings.json').append('tags', 'cool')
-.then(err => {
-  if (err) return console.log(err)
+.then(() => {
   var pkg = getParsedPackage()
   console.log(pkg.tags)
-})
+}, reason => console.log(reason))
 ```
 
 Appending a preserved array to an array:
@@ -219,11 +216,10 @@ updater('./settings.json').delete('name', function(err) {
 _Promise_
 ```js
 updater('./settings.json').delete('name')
-.then(err => {
-  if (err) return console.log(err)
+.then(() => {
   var pkg = getParsedPackage()
   console.log(pkg)
-})
+}, reason => console.log(reason))
 ```
 
 Deleting multiple properties:
